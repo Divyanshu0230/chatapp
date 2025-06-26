@@ -100,35 +100,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-@app.route('/register', methods=['POST'])
-def register():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    avatar = data.get('avatar', '')
-    if not username or not password:
-        return jsonify({'error': 'Username and password required'}), 400
-    if username in users:
-        return jsonify({'error': 'Username already exists'}), 400
-    users[username] = {
-        'password_hash': hash_password(password),
-        'avatar': avatar
-    }
-    return jsonify({'status': 'registered'})
-
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    if not username or not password:
-        return jsonify({'error': 'Username and password required'}), 400
-    user = users.get(username)
-    if not user or user['password_hash'] != hash_password(password):
-        return jsonify({'error': 'Invalid credentials'}), 401
-    token = generate_jwt(username)
-    return jsonify({'token': token, 'username': username, 'avatar': user.get('avatar', '')})
-
 # Database helper functions
 def save_to_db(collection, data):
     if USE_MONGODB:
@@ -160,13 +131,12 @@ def update_in_db(collection, query, update):
 
 # --- All chat endpoints below require login ---
 @app.route('/send_message', methods=['POST'])
-@login_required
 def send_message():
     data = request.get_json()
     room = data.get('room')
     text = data.get('text', '')
     file_data = data.get('file')
-    sender = g.username
+    sender = data.get('user', 'Anonymous')
     if not room:
         return jsonify({'error': 'Missing room'}), 400
     if room not in chat_rooms:
@@ -176,8 +146,7 @@ def send_message():
     mention_pattern = r'@(\w+)'
     for match in re.finditer(mention_pattern, text):
         mentioned_user = match.group(1)
-        if mentioned_user in all_known_users:
-            mentions.append(mentioned_user)
+        mentions.append(mentioned_user)
     message = {
         'id': str(uuid.uuid4()),
         'text': text,
@@ -192,15 +161,13 @@ def send_message():
     if file_data:
         message['file'] = file_data
     chat_rooms[room].append(message)
-    # Save to database
     save_to_db('messages', message)
     return jsonify({'status': 'sent'})
 
 @app.route('/get_mentions', methods=['POST'])
-@login_required
 def get_mentions():
     data = request.get_json()
-    username = g.username
+    username = data.get('username')
     mentions = []
     for room_name, messages in chat_rooms.items():
         for msg in messages:
@@ -212,7 +179,6 @@ def get_mentions():
     return jsonify(mentions)
 
 @app.route('/get/<room>')
-@login_required
 def get_messages(room):
     if room not in chat_rooms:
         # Try to load from database
@@ -224,12 +190,11 @@ def get_messages(room):
     return jsonify(chat_rooms[room])
 
 @app.route('/join', methods=['POST'])
-@login_required
 def join_room():
     data = request.get_json()
     room = data.get('room')
     password = data.get('password', '')
-    user = g.username
+    user = data.get('user', 'Anonymous')
     if not room or not user:
         return jsonify({'error': 'Missing data'}), 400
     # Check if room exists and password matches
@@ -244,11 +209,10 @@ def join_room():
     return jsonify({'status': 'joined'})
 
 @app.route('/leave', methods=['POST'])
-@login_required
 def leave_room():
     data = request.get_json()
     room = data.get('room')
-    user = g.username
+    user = data.get('user', 'Anonymous')
     if not room or not user:
         return jsonify({'error': 'Missing data'}), 400
     online_users[room].discard(user)
@@ -257,16 +221,14 @@ def leave_room():
     return jsonify({'status': 'left'})
 
 @app.route('/users/<room>')
-@login_required
 def get_users(room):
     return jsonify(list(online_users[room]))
 
 @app.route('/typing', methods=['POST'])
-@login_required
 def typing():
     data = request.get_json()
     room = data.get('room')
-    user = g.username
+    user = data.get('user', 'Anonymous')
     typing = data.get('typing')
     if not room or not user or typing is None:
         return jsonify({'error': 'Missing data'}), 400
@@ -277,18 +239,16 @@ def typing():
     return jsonify({'typing': list(user_typing[room])})
 
 @app.route('/clear/<room>', methods=['DELETE'])
-@login_required
 def clear_chat(room):
     chat_rooms[room].clear()
     return jsonify({'status': 'cleared'})
 
 @app.route('/create_room', methods=['POST'])
-@login_required
 def create_room():
     data = request.get_json()
     name = data.get('name')
     password = data.get('password', '')
-    creator = g.username
+    creator = data.get('user', 'Anonymous')
     if not name:
         return jsonify({'error': 'Room name required'}), 400
     if name in rooms:
@@ -302,17 +262,15 @@ def create_room():
     return jsonify({'status': 'created', 'room': name})
 
 @app.route('/rooms')
-@login_required
 def list_rooms():
     return jsonify([{'name': r['name'], 'has_password': bool(r['password_hash'])} for r in rooms.values()])
 
 @app.route('/send_dm', methods=['POST'])
-@login_required
 def send_dm():
     data = request.get_json()
     to_user = data.get('to')
     text = data.get('text')
-    sender = g.username
+    sender = data.get('user', 'Anonymous')
     if not to_user or not text:
         return jsonify({'error': 'Missing data'}), 400
     key = tuple(sorted([sender, to_user]))
@@ -326,30 +284,26 @@ def send_dm():
     return jsonify({'status': 'ok'})
 
 @app.route('/get_dm/<user>')
-@login_required
 def get_dm(user):
-    key = tuple(sorted([g.username, user]))
+    key = tuple(sorted([data.get('user', 'Anonymous'), user]))
     return jsonify(dms[key][-50:])
 
 @app.route('/heartbeat', methods=['POST'])
-@login_required
 def heartbeat():
-    user_last_seen[g.username] = time.time()
+    user_last_seen[data.get('user', 'Anonymous')] = time.time()
     return jsonify({'status': 'ok'})
 
 @app.route('/online_users')
-@login_required
 def online_users_api():
     now = time.time()
     online = [u for u, t in user_last_seen.items() if now - t < 30]
     return jsonify(online)
 
 @app.route('/get_mod_logs', methods=['POST'])
-@login_required
 def get_mod_logs():
     data = request.get_json()
     room = data.get('room')
-    username = g.username
+    username = data.get('user', 'Anonymous')
     if not room:
         return jsonify({'error': 'Missing room'}), 400
     if not isRoomAdmin(room, username):
@@ -370,12 +324,11 @@ def addModLog(room, action, admin, target, details=""):
     mod_logs.append(log_entry)
 
 @app.route('/kick_user', methods=['POST'])
-@login_required
 def kick_user():
     data = request.get_json()
     room = data.get('room')
     user = data.get('user')
-    admin = g.username
+    admin = data.get('user', 'Anonymous')
     if not room or not user:
         return jsonify({'error': 'Missing data'}), 400
     if not isRoomAdmin(room, admin):
@@ -386,12 +339,11 @@ def kick_user():
     return jsonify({'status': 'kicked'})
 
 @app.route('/ban_user', methods=['POST'])
-@login_required
 def ban_user():
     data = request.get_json()
     room = data.get('room')
     user = data.get('user')
-    admin = g.username
+    admin = data.get('user', 'Anonymous')
     if not room or not user:
         return jsonify({'error': 'Missing data'}), 400
     if not isRoomAdmin(room, admin):
@@ -403,12 +355,11 @@ def ban_user():
     return jsonify({'status': 'banned'})
 
 @app.route('/pin_message', methods=['POST'])
-@login_required
 def pin_message():
     data = request.get_json()
     room = data.get('room')
     message_id = data.get('id')
-    admin = g.username
+    admin = data.get('user', 'Anonymous')
     if not room or not message_id:
         return jsonify({'error': 'Missing data'}), 400
     if not isRoomAdmin(room, admin):
@@ -422,12 +373,10 @@ def pin_message():
     return jsonify({'error': 'Message not found'}), 404
 
 @app.route('/get_pins/<room>')
-@login_required
 def get_pins(room):
     return jsonify(room_pins[room])
 
 @app.route('/edit_message', methods=['POST'])
-@login_required
 def edit_message():
     data = request.get_json()
     room = data.get('room')
@@ -436,18 +385,17 @@ def edit_message():
     if not room or not message_id or not new_text:
         return jsonify({'error': 'Missing data'}), 400
     for msg in chat_rooms[room]:
-        if msg['id'] == message_id and msg['sender'] == g.username:
+        if msg['id'] == message_id and msg['sender'] == data.get('user', 'Anonymous'):
             msg['text'] = new_text
             return jsonify({'status': 'edited'})
     return jsonify({'error': 'Message not found or not allowed'}), 403
 
 @app.route('/delete_message', methods=['POST'])
-@login_required
 def delete_message():
     data = request.get_json()
     room = data.get('room')
     message_id = data.get('id')
-    admin = g.username
+    admin = data.get('user', 'Anonymous')
     if not room or not message_id:
         return jsonify({'error': 'Missing data'}), 400
     for i, msg in enumerate(chat_rooms[room]):
@@ -461,7 +409,6 @@ def delete_message():
     return jsonify({'error': 'Message not found'}), 404
 
 @app.route('/react_message', methods=['POST'])
-@login_required
 def react_message():
     data = request.get_json()
     room = data.get('room')
@@ -475,21 +422,20 @@ def react_message():
                 msg['reactions'] = {}
             if emoji not in msg['reactions']:
                 msg['reactions'][emoji] = []
-            if g.username in msg['reactions'][emoji]:
-                msg['reactions'][emoji].remove(g.username)
+            if data.get('user', 'Anonymous') in msg['reactions'][emoji]:
+                msg['reactions'][emoji].remove(data.get('user', 'Anonymous'))
             else:
-                msg['reactions'][emoji].append(g.username)
+                msg['reactions'][emoji].append(data.get('user', 'Anonymous'))
             return jsonify({'status': 'reacted', 'reactions': msg['reactions']})
     return jsonify({'error': 'Message not found'}), 404
 
 @app.route('/reply_message', methods=['POST'])
-@login_required
 def reply_message():
     data = request.get_json()
     room = data.get('room')
     message_id = data.get('id')
     text = data.get('text')
-    sender = g.username
+    sender = data.get('user', 'Anonymous')
     if not room or not message_id or not text:
         return jsonify({'error': 'Missing data'}), 400
     for msg in chat_rooms[room]:
@@ -507,7 +453,6 @@ def reply_message():
     return jsonify({'error': 'Message not found'}), 404
 
 @app.route('/get_replies', methods=['POST'])
-@login_required
 def get_replies():
     data = request.get_json()
     room = data.get('room')
@@ -520,11 +465,10 @@ def get_replies():
     return jsonify([])
 
 @app.route('/mark_read', methods=['POST'])
-@login_required
 def mark_read():
     data = request.get_json()
     room = data.get('room')
-    username = g.username
+    username = data.get('user', 'Anonymous')
     if not room:
         return jsonify({'error': 'Missing room'}), 400
     if username not in last_read_times:
@@ -533,10 +477,9 @@ def mark_read():
     return jsonify({'status': 'marked'})
 
 @app.route('/get_unread_count', methods=['POST'])
-@login_required
 def get_unread_count():
     data = request.get_json()
-    username = g.username
+    username = data.get('user', 'Anonymous')
     unread_counts = {}
     for room_name, messages in chat_rooms.items():
         if not messages:
@@ -553,11 +496,10 @@ def get_unread_count():
     return jsonify(unread_counts)
 
 @app.route('/mark_message_read', methods=['POST'])
-@login_required
 def mark_message_read():
     data = request.get_json()
     message_id = data.get('message_id')
-    username = g.username
+    username = data.get('user', 'Anonymous')
     if not message_id:
         return jsonify({'error': 'Missing message_id'}), 400
     if message_id not in message_read_by:
@@ -567,7 +509,6 @@ def mark_message_read():
     return jsonify({'status': 'marked'})
 
 @app.route('/get_message_readers', methods=['POST'])
-@login_required
 def get_message_readers():
     data = request.get_json()
     message_id = data.get('message_id')
@@ -577,7 +518,6 @@ def get_message_readers():
     return jsonify(readers)
 
 @app.route('/upload_file', methods=['POST'])
-@login_required
 def upload_file():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'}), 400
