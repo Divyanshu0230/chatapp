@@ -67,14 +67,27 @@ A modern, real-time chat application built with Flask and JavaScript that allows
 4. **See who's online** - View all active users in the room
 5. **Use emojis** - Click the emoji button to add emojis to your messages
 
-## 🖼️ Screenshots
+## 🖼️ Demo Screenshots
 
-The repository includes several screenshots showing the application in action:
-- Main chat interface
-- User joining rooms
-- Real-time messaging
-- Mobile responsiveness
-- Offline functionality
+### Main Chat Interface
+![Main Chat Interface](Screenshot%202025-06-27%20at%204.11.28%20AM.png)
+*Clean and modern chat interface with room-based messaging*
+
+### User Joining Rooms
+![User Joining Rooms](Screenshot%202025-06-27%20at%204.11.44%20AM.png)
+*Easy room creation and joining process*
+
+### Real-time Messaging
+![Real-time Messaging](Screenshot%202025-06-27%20at%204.11.55%20AM.png)
+*Instant message delivery with timestamps*
+
+### Mobile Responsiveness
+![Mobile Responsiveness](Screenshot%202025-06-27%20at%204.12.20%20AM.png)
+*Fully responsive design works on all devices*
+
+### Offline Functionality
+![Offline Functionality](Screenshot%202025-06-27%20at%204.12.35%20AM.png)
+*Perfect for local network communication without internet*
 
 ## 🛠️ Technical Details
 
