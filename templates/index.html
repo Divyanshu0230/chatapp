@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatFlow Pro - Advanced Messaging</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile">
+                    <div class="avatar" id="userAvatar">U</div>
+                    <div class="user-info">
+                        <h3 id="userName">Anonymous</h3>
+                        <div class="status">
+                            <div class="status-dot"></div>
+                            Online
+                        </div>
+                    </div>
+                </div>
+                <input type="text" class="room-input" id="userNameInput" placeholder="Enter your name">
+            </div>
+
+            <div class="room-section">
+                <h4>Create Room</h4>
+                <input type="text" class="room-input" id="createRoomName" placeholder="Room name">
+                <input type="password" class="room-input" id="createRoomPassword" placeholder="Password (optional)">
+                <button class="action-btn" id="createRoomBtn" style="width: 100%; margin-bottom: 20px;">
+                    <i class="fas fa-plus"></i> Create Room
+                </button>
+                <h4>Join Room</h4>
+                <input type="text" class="room-input" id="roomInput" placeholder="Enter room name or 4-digit code">
+                <input type="password" class="room-input" id="joinRoomPassword" placeholder="Password (if required)">
+                <button class="action-btn" onclick="chatApp.joinRoom()" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Join Room
+                </button>
+            </div>
+
+            <div class="room-list" id="roomList">
+                <!-- Active rooms will be populated here -->
+            </div>
+
+            <div class="online-users">
+                <h4>Online Users (<span id="userCount">0</span>)</h4>
+                <div class="user-list" id="onlineUsers">
+                    <!-- Online users will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="main-chat">
+            <div class="chat-header">
+                <div class="chat-title">
+                    <h2 id="chatTitle">ChatFlow Pro</h2>
+                    <div class="room-code" id="currentRoomCode" style="display: none;">Room: ----</div>
+                </div>
+                <div class="chat-actions">
+                    <button class="action-btn" onclick="chatApp.clearChat()">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                    <button class="action-btn" onclick="chatApp.leaveRoom()">
+                        <i class="fas fa-sign-out-alt"></i> Leave
+                    </button>
+                </div>
+            </div>
+
+            <div id="chatArea">
+                <div id="replyTip" style="font-size:0.95em;color:#888;margin-bottom:4px;">Tip: Click <b>Reply</b> on any message to start a thread.</div>
+                <div class="messages-container" id="messagesContainer">
+                    <div class="welcome-screen" id="welcomeScreen">
+                        <i class="fas fa-comments"></i>
+                        <h2>Welcome to ChatFlow Pro</h2>
+                        <p>Enter a room code to start chatting with others!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <span id="typingUser">Someone</span> is typing
+                <div class="typing-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+
+            <div class="message-input-container">
+                <div class="message-input-wrapper">
+                    <textarea 
+                        class="message-input" 
+                        id="messageInput" 
+                        placeholder="Type your message..." 
+                        rows="1"
+                        disabled
+                    ></textarea>
+                    <button class="action-btn" onclick="toggleEmojiPicker()" style="border-radius: 50%; width: 50px; height: 50px;">
+                        😊
+                    </button>
+                    <button class="send-btn" id="sendBtn" onclick="chatApp.sendMessage()" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="emoji-picker" id="emojiPicker">
+            <div class="emoji" onclick="addEmoji('😀')">😀</div>
+            <div class="emoji" onclick="addEmoji('😂')">😂</div>
+            <div class="emoji" onclick="addEmoji('😍')">😍</div>
+            <div class="emoji" onclick="addEmoji('🤔')">🤔</div>
+            <div class="emoji" onclick="addEmoji('👍')">👍</div>
+            <div class="emoji" onclick="addEmoji('❤️')">❤️</div>
+            <div class="emoji" onclick="addEmoji('🎉')">🎉</div>
+            <div class="emoji" onclick="addEmoji('🔥')">🔥</div>
+            <div class="emoji" onclick="addEmoji('💯')">💯</div>
+            <div class="emoji" onclick="addEmoji('✨')">✨</div>
+            <div class="emoji" onclick="addEmoji('🚀')">🚀</div>
+            <div class="emoji" onclick="addEmoji('💬')">💬</div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <!-- Glassmorphism Auth Modal -->
+    <div id="authModal" class="modal">
+      <section class="container">
+        <div class="login-container">
+          <div class="circle circle-one"></div>
+          <div class="form-container">
+            <img src="https://raw.githubusercontent.com/hicodersofficial/glassmorphism-login-form/master/assets/illustration.png" alt="illustration" class="illustration" />
+            <h1 class="opacity" id="authTitle">LOGIN</h1>
+            <div id="authMessage" class="auth-message"></div>
+            <form id="loginForm" class="auth-form">
+              <input type="text" id="loginUsername" placeholder="USERNAME" required />
+              <input type="password" id="loginPassword" placeholder="PASSWORD" required />
+              <button type="submit" class="opacity">SUBMIT</button>
+            </form>
+            <form id="signupForm" class="auth-form" style="display:none;">
+              <input type="text" id="signupUsername" placeholder="USERNAME" required />
+              <input type="password" id="signupPassword" placeholder="PASSWORD" required />
+              <input type="text" id="signupAvatar" placeholder="AVATAR URL (optional)" />
+              <button type="submit" class="opacity">REGISTER</button>
+            </form>
+            <div class="register-forget opacity">
+              <a href="#" id="registerLink">REGISTER</a>
+              <a href="#" id="forgotLink">FORGOT PASSWORD</a>
+            </div>
+          </div>
+          <div class="circle circle-two"></div>
+        </div>
+        <div class="theme-btn-container"></div>
+      </section>
+    </div>
+    <!-- End Auth Modal -->
+
+    <!-- Load JavaScript -->
+    <script src="{{ url_for('static', filename='chat-app.js') }}"></script>
+    <script src="{{ url_for('static', filename='emoji.js') }}"></script>
+    <script src="{{ url_for('static', filename='utils.js') }}"></script>
+    
+    <script>
+        // Initialize the chat application
+        const chatApp = new ChatApp();
+    </script>
+</body>
+</html>
