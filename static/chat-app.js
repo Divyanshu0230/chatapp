@@ -162,14 +162,9 @@ class ChatApp {
             this.showNotification('Please enter a room code', 'error');
             return;
         }
-        const jwt = localStorage.getItem('jwt');
         try {
             const res = await fetch('/join_room', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': jwt
-                },
                 body: JSON.stringify({ room: roomCode })
             });
             const data = await res.json();
@@ -194,13 +189,8 @@ class ChatApp {
      */
     async joinUserToRoom(password) {
         try {
-            const jwt = localStorage.getItem('jwt');
             const res = await fetch('/join', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': jwt
-                },
                 body: JSON.stringify({
                     room: this.currentRoom,
                     user: this.currentUser,
@@ -226,13 +216,8 @@ class ChatApp {
 
         // Leave user from room on server
         try {
-            const jwt = localStorage.getItem('jwt');
             await fetch('/leave', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': jwt
-                },
                 body: JSON.stringify({
                     room: this.currentRoom,
                     user: this.currentUser
@@ -270,14 +255,9 @@ class ChatApp {
         const messageInput = document.getElementById('messageInput');
         const text = messageInput.value.trim();
         if (!text) return;
-        const jwt = localStorage.getItem('jwt');
         try {
-            const res = await fetch(`${API_BASE_URL}/send_message`, {
+            const res = await fetch('/send_message', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': jwt
-                },
                 body: JSON.stringify({ room: this.currentRoom, text })
             });
             if (res.ok) {
@@ -439,7 +419,6 @@ class ChatApp {
         // Send typing status
         fetch('/typing', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 room: this.currentRoom,
                 user: this.currentUser,
@@ -451,7 +430,6 @@ class ChatApp {
         this.typingTimeout = setTimeout(() => {
             fetch('/typing', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     room: this.currentRoom,
                     user: this.currentUser,
@@ -570,14 +548,9 @@ class ChatApp {
 
     async markMessagesAsRead() {
         if (!this.currentRoom) return;
-        const jwt = localStorage.getItem('jwt');
         try {
             await fetch('/mark_read', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': jwt
-                },
                 body: JSON.stringify({ room: this.currentRoom })
             });
         } catch (err) {
@@ -586,14 +559,9 @@ class ChatApp {
     }
 
     async updateUnreadCounts() {
-        const jwt = localStorage.getItem('jwt');
         try {
             const res = await fetch('/get_unread_count', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': jwt
-                },
                 body: JSON.stringify({})
             });
             const unread_counts = await res.json();
@@ -721,7 +689,6 @@ let onlineUserSet = new Set();
 
 // Poll online users and update status
 async function pollOnlineUsers() {
-    const jwt = localStorage.getItem('jwt');
     if (!jwt) return;
     try {
         const res = await fetch('/online_users', { headers: { 'Authorization': jwt } });
@@ -738,15 +705,13 @@ setInterval(pollOnlineUsers, 5000);
 
 // Send heartbeat
 setInterval(() => {
-    const jwt = localStorage.getItem('jwt');
     if (!jwt) return;
     fetch('/heartbeat', { method: 'POST', headers: { 'Authorization': jwt } });
 }, 10000);
 
 // Helper to check if current user is room admin
 function isRoomAdmin(room) {
-    const jwt = localStorage.getItem('jwt');
-    if (!jwt || !room) return false;
+    if (!room) return false;
     // We'll fetch the room list and check creator
     // For now, store the last fetched room list
     return window.lastRoomList && window.lastRoomList.find(r => r.name === room && r.creator === localStorage.getItem('username'));
@@ -754,7 +719,6 @@ function isRoomAdmin(room) {
 
 // Fetch and cache room list for admin checks
 async function fetchRoomsAndCache() {
-    const jwt = localStorage.getItem('jwt');
     if (!jwt) return;
     try {
         const res = await fetch('/rooms', { headers: { 'Authorization': jwt } });
@@ -802,14 +766,9 @@ ChatApp.prototype.displayOnlineUsers = function(users) {
 };
 
 async function adminAction(endpoint, room, user) {
-    const jwt = localStorage.getItem('jwt');
     try {
         const res = await fetch(`/${endpoint}`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': jwt
-            },
             body: JSON.stringify({ room, user })
         });
         const data = await res.json();
@@ -987,14 +946,9 @@ function getReadReceiptText(readBy) {
 }
 
 async function markMessageAsRead(messageId) {
-    const jwt = localStorage.getItem('jwt');
     try {
         await fetch('/mark_message_read', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': jwt
-            },
             body: JSON.stringify({ message_id: messageId })
         });
     } catch (err) {
@@ -1008,14 +962,9 @@ function highlightMentions(text) {
 
 async function fetchAndRenderReplies(msg, repliesContainer, room) {
     repliesContainer.innerHTML = '';
-    const jwt = localStorage.getItem('jwt');
     try {
         const res = await fetch('/get_replies', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': jwt
-            },
             body: JSON.stringify({ room, id: msg.id })
         });
         const replies = await res.json();
@@ -1046,14 +995,9 @@ function showReplyInput(msg, messageDiv, room) {
     sendBtn.onclick = async () => {
         const text = input.value.trim();
         if (!text) return;
-        const jwt = localStorage.getItem('jwt');
         try {
             const res = await fetch('/reply_message', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': jwt
-                },
                 body: JSON.stringify({ room, id: msg.id, text })
             });
             if (res.ok) {
@@ -1121,11 +1065,8 @@ async function showDM(user) {
     document.getElementById('chatTitle').textContent = `DM with ${user}`;
     document.getElementById('currentRoomCode').style.display = 'none';
     // Fetch DM messages
-    const jwt = localStorage.getItem('jwt');
     try {
-        const res = await fetch(`/get_dm/${user}`, {
-            headers: { 'Authorization': jwt }
-        });
+        const res = await fetch(`/get_dm/${user}`);
         const messages = await res.json();
         renderDMMessages(messages, user);
     } catch (err) {
@@ -1177,14 +1118,9 @@ async function sendDM(user) {
     const input = document.getElementById('messageInput');
     const text = input.value.trim();
     if (!text) return;
-    const jwt = localStorage.getItem('jwt');
     try {
         const res = await fetch('/send_dm', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': jwt
-            },
             body: JSON.stringify({ to: user, text })
         });
         if (res.ok) {
@@ -1236,14 +1172,9 @@ function addMentionsTab() {
 }
 
 async function showMentions() {
-    const jwt = localStorage.getItem('jwt');
     try {
         const res = await fetch('/get_mentions', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': jwt
-            },
             body: JSON.stringify({})
         });
         const mentions = await res.json();
@@ -1288,18 +1219,13 @@ function addModLogsButton() {
 }
 
 async function showModLogs() {
-    if (!this.currentRoom || !isRoomAdmin(this.currentRoom, localStorage.getItem('username'))) {
+    if (!this.currentRoom || !isRoomAdmin(this.currentRoom)) {
         showNotification('Only admins can view mod logs', 'error');
         return;
     }
-    const jwt = localStorage.getItem('jwt');
     try {
         const res = await fetch('/get_mod_logs', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': jwt
-            },
             body: JSON.stringify({ room: this.currentRoom })
         });
         const logs = await res.json();
@@ -1383,13 +1309,9 @@ async function handleFileSelect(event) {
     const formData = new FormData();
     formData.append('file', file);
     
-    const jwt = localStorage.getItem('jwt');
     try {
         const res = await fetch('/upload_file', {
             method: 'POST',
-            headers: {
-                'Authorization': jwt
-            },
             body: formData
         });
         const data = await res.json();
@@ -1408,14 +1330,9 @@ async function handleFileSelect(event) {
 async function sendMessageWithFile(fileData) {
     const messageInput = document.getElementById('messageInput');
     const text = messageInput.value.trim();
-    const jwt = localStorage.getItem('jwt');
     try {
         const res = await fetch('/send_message', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': jwt
-            },
             body: JSON.stringify({ 
                 room: this.currentRoom, 
                 text: text || `Shared file: ${fileData.filename}`,
