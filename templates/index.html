@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatFlow Pro - Advanced Messaging</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="app-container">
@@ -25,15 +25,8 @@
             </div>
 
             <div class="room-section">
-                <h4>Create Room</h4>
-                <input type="text" class="room-input" id="createRoomName" placeholder="Room name">
-                <input type="password" class="room-input" id="createRoomPassword" placeholder="Password (optional)">
-                <button class="action-btn" id="createRoomBtn" style="width: 100%; margin-bottom: 20px;">
-                    <i class="fas fa-plus"></i> Create Room
-                </button>
                 <h4>Join Room</h4>
-                <input type="text" class="room-input" id="roomInput" placeholder="Enter room name or 4-digit code">
-                <input type="password" class="room-input" id="joinRoomPassword" placeholder="Password (if required)">
+                <input type="text" class="room-input" id="roomInput" placeholder="Enter 4-digit room code" maxlength="4">
                 <button class="action-btn" onclick="chatApp.joinRoom()" style="width: 100%;">
                     <i class="fas fa-sign-in-alt"></i> Join Room
                 </button>
@@ -67,14 +60,11 @@
                 </div>
             </div>
 
-            <div id="chatArea">
-                <div id="replyTip" style="font-size:0.95em;color:#888;margin-bottom:4px;">Tip: Click <b>Reply</b> on any message to start a thread.</div>
-                <div class="messages-container" id="messagesContainer">
-                    <div class="welcome-screen" id="welcomeScreen">
-                        <i class="fas fa-comments"></i>
-                        <h2>Welcome to ChatFlow Pro</h2>
-                        <p>Enter a room code to start chatting with others!</p>
-                    </div>
+            <div class="messages-container" id="messagesContainer">
+                <div class="welcome-screen" id="welcomeScreen">
+                    <i class="fas fa-comments"></i>
+                    <h2>Welcome to ChatFlow Pro</h2>
+                    <p>Enter a room code to start chatting with others!</p>
                 </div>
             </div>
 
@@ -123,15 +113,15 @@
     </div>
 
     <div class="notification" id="notification"></div>
-
+    
     <!-- Load JavaScript -->
-    <script src="/static/chat-app.js"></script>
-    <script src="/static/emoji.js"></script>
-    <script src="/static/utils.js"></script>
+    <script src="{{ url_for('static', filename='chat-app.js') }}"></script>
+    <script src="{{ url_for('static', filename='emoji.js') }}"></script>
+    <script src="{{ url_for('static', filename='utils.js') }}"></script>
     
     <script>
         // Initialize the chat application
         const chatApp = new ChatApp();
     </script>
 </body>
-</html><!-- Force redeploy: dummy comment -->
+</html>

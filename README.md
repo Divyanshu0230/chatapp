@@ -1,198 +1,151 @@
-# ChatFlow Pro - Advanced Real-Time Chat Application
+# Real-Time Chat Application
 
-A feature-rich, modern chat application built with Flask, JavaScript, and MongoDB. Supports real-time messaging, file sharing, user authentication, and advanced moderation features.
+A modern, real-time chat application built with Flask and JavaScript that allows users to create chat rooms and communicate in real-time. Perfect for local network communication when you have no mobile data!
 
-## 🚀 Features
+## 🌟 Features
 
-### Core Features
-- **Real-time messaging** with WebSocket-like polling
-- **User authentication** with JWT tokens
-- **Custom chat rooms** with passwords
-- **User avatars** and profiles
-- **Online/offline status** tracking
-- **Typing indicators**
+- **Real-time messaging** - Instant message delivery
+- **Room-based chat** - Create and join different chat rooms
+- **User presence** - See who's online in each room
+- **Typing indicators** - Know when someone is typing
+- **Offline-friendly** - Works on local network without internet
+- **Modern UI** - Clean and responsive design
+- **Emoji support** - Express yourself with emojis
+- **Message timestamps** - Track when messages were sent
 
-### Advanced Features
-- **Threaded replies** - Reply to specific messages
-- **Mentions** - @username notifications
-- **Message reactions** - Emoji reactions with counts
-- **Message editing & deletion** - For own messages
-- **Read receipts** - See who read your messages
-- **Unread message indicators** - Badge counts per room
-- **File & image sharing** - Upload and preview files
-- **Private messaging (DMs)** - Direct user-to-user chat
-- **Admin/moderator roles** - Kick, ban, pin messages
-- **Moderation logs** - Track admin actions
-- **Pinned messages** - Important messages at top
-- **Message search** - Find messages quickly
-
-### Security & Moderation
-- **JWT authentication** - Secure user sessions
-- **Room passwords** - Private room access
-- **Admin controls** - User management
-- **Message moderation** - Delete inappropriate content
-- **Ban system** - Prevent user access
-
-## 🛠️ Setup
+## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.8+
-- MongoDB (optional, for production)
+- Python 3.6 or higher
+- Flask
+- Flask-CORS
 
 ### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd chatapp-pro
+   git clone https://github.com/Divyanshu0230/chatapp.git
+   cd chatapp
    ```
 
 2. **Install dependencies**
    ```bash
-   pip install -r requirements.txt
+   pip install flask flask-cors
    ```
 
-3. **Environment setup** (optional, for MongoDB)
-   Create a `.env` file:
-   ```env
-   MONGODB_URI=mongodb://localhost:27017/chatapp
-   SECRET_KEY=your-secret-key-here
-   ```
-
-4. **Run the application**
+3. **Run the application**
    ```bash
-   python app.py
+   python3 app.py
    ```
 
-5. **Access the app**
-   Open `http://localhost:5050` in your browser
+4. **Access the application**
+   - Open your browser and go to: `http://localhost:5050`
+   - Or use your local IP: `http://[your-local-ip]:5050`
 
-## 📱 Usage
+## 📱 How to Use (Especially when you have no mobile data!)
 
-### Getting Started
-1. **Sign up/Login** - Create an account or login
-2. **Join a room** - Enter a 4-digit room code
-3. **Start chatting** - Send messages, files, and reactions
-
-### Advanced Features
-- **Create rooms** - Use the room creation feature
-- **Send files** - Click the paperclip icon
-- **Reply to messages** - Click "Reply" on any message
-- **React to messages** - Use emoji reactions
-- **Mention users** - Type @username
-- **Private messages** - Use the DM sidebar
-
-### Admin Features
-- **Kick users** - Remove users from room
-- **Ban users** - Permanently block users
-- **Pin messages** - Keep important messages visible
-- **View mod logs** - Track moderation actions
-
-## 🚀 Deployment
-
-### Heroku Deployment
-1. **Create Heroku app**
+### Local Network Setup
+1. **Start the server** on one computer:
    ```bash
-   heroku create your-app-name
+   python3 app.py
    ```
 
-2. **Add MongoDB addon**
-   ```bash
-   heroku addons:create mongolab:sandbox
-   ```
+2. **Find your local IP address**:
+   - On Mac/Linux: `ifconfig` or `ip addr`
+   - On Windows: `ipconfig`
+   - Look for your local IP (usually starts with 192.168.x.x or 10.0.x.x)
 
-3. **Set environment variables**
-   ```bash
-   heroku config:set SECRET_KEY=your-secret-key
-   ```
+3. **Connect from other devices**:
+   - Make sure all devices are on the same WiFi network
+   - Open browser on other devices and go to: `http://[your-local-ip]:5050`
+   - Example: `http://192.168.1.100:5050`
 
-4. **Deploy**
-   ```bash
-   git push heroku main
-   ```
+### Using the Chat App
+1. **Enter a room code** - Create or join a chat room using any code
+2. **Enter your name** - Choose a display name
+3. **Start chatting** - Send messages and see them in real-time
+4. **See who's online** - View all active users in the room
+5. **Use emojis** - Click the emoji button to add emojis to your messages
 
-### Render Deployment
-1. **Connect repository** to Render
-2. **Set build command**: `pip install -r requirements.txt`
-3. **Set start command**: `gunicorn app:app`
-4. **Add environment variables**:
-   - `MONGODB_URI`
-   - `SECRET_KEY`
+## 🖼️ Screenshots
 
-### Vercel Deployment
-1. **Install Vercel CLI**
-   ```bash
-   npm i -g vercel
-   ```
+The repository includes several screenshots showing the application in action:
+- Main chat interface
+- User joining rooms
+- Real-time messaging
+- Mobile responsiveness
+- Offline functionality
 
-2. **Deploy**
-   ```bash
-   vercel
-   ```
+## 🛠️ Technical Details
 
-## 🔧 Configuration
+### Backend (Flask)
+- **app.py** - Main Flask application with REST API endpoints
+- **Real-time updates** - Polling-based message updates
+- **In-memory storage** - Messages and user data stored in memory
+- **CORS enabled** - Cross-origin requests supported
 
-### Environment Variables
-- `MONGODB_URI` - MongoDB connection string
-- `SECRET_KEY` - Flask secret key for sessions
-- `PORT` - Server port (default: 5050)
+### Frontend (JavaScript/HTML/CSS)
+- **templates/index.html** - Main chat interface
+- **static/chat-app.js** - Core chat functionality
+- **static/style.css** - Modern, responsive styling
+- **static/emoji.js** - Emoji picker functionality
+- **static/utils.js** - Utility functions
 
-### File Upload Settings
-- **Max file size**: 5MB
-- **Allowed formats**: txt, pdf, png, jpg, jpeg, gif, doc, docx
-- **Storage**: Local filesystem (uploads/ folder)
+### API Endpoints
+- `GET /` - Main chat interface
+- `POST /send` - Send a message
+- `GET /get/<room>` - Get messages for a room
+- `POST /join` - Join a chat room
+- `POST /leave` - Leave a chat room
+- `GET /users/<room>` - Get online users
+- `POST /typing` - Update typing status
+- `DELETE /clear/<room>` - Clear chat history
 
-## 📁 Project Structure
+## 🌐 Network Configuration
 
+### For Local Network Use
+- **Port**: 5050 (configurable in app.py)
+- **Host**: 0.0.0.0 (accessible from any device on network)
+- **Protocol**: HTTP (for simplicity and offline use)
+
+### Security Note
+This is a development server intended for local network use. For production deployment, consider:
+- Using HTTPS
+- Implementing user authentication
+- Adding rate limiting
+- Using a production WSGI server
+
+## 🔧 Customization
+
+### Changing Port
+Edit `app.py` and modify the last line:
+```python
+app.run(host='0.0.0.0', port=YOUR_PORT)
 ```
-chatapp-pro/
-├── app.py                 # Main Flask application
-├── requirements.txt       # Python dependencies
-├── Procfile              # Heroku deployment config
-├── runtime.txt           # Python version
-├── README.md             # This file
-├── static/               # Frontend assets
-│   ├── chat-app.js       # Main JavaScript
-│   ├── style.css         # Styles
-│   ├── emoji.js          # Emoji picker
-│   └── utils.js          # Utility functions
-├── templates/            # HTML templates
-│   └── index.html        # Main page
-└── uploads/              # File uploads (auto-created)
-```
+
+### Styling
+Modify `static/style.css` to customize the appearance.
+
+### Features
+Add new features by modifying the JavaScript files in the `static/` directory.
 
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+4. Submit a pull request
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+This project is open source and available under the [MIT License](LICENSE).
 
-## 🆘 Support
+## 🙏 Acknowledgments
 
-For issues and questions:
-- Create an issue on GitHub
-- Check the documentation
-- Review the code comments
-
-## 🔮 Future Features
-
-- **Voice messages** - Audio recording and playback
-- **Video calls** - WebRTC integration
-- **Message encryption** - End-to-end encryption
-- **Push notifications** - Browser notifications
-- **Message scheduling** - Send messages later
-- **Advanced search** - Full-text search
-- **Message translation** - Multi-language support
-- **Custom themes** - User-defined styling
-- **Bot integration** - Automated responses
-- **Analytics** - Usage statistics
+- Built with Flask and vanilla JavaScript
+- Designed for simplicity and offline functionality
+- Perfect for local network communication
 
 ---
 
-**Built with ❤️ using Flask, JavaScript, and MongoDB** 
+**Perfect for when you're offline or have no mobile data!** 📶➡️🚫➡️💬 
