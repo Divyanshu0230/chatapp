@@ -1654,6 +1654,6 @@ function formatFileSize(bytes) {
 }
 
 // API Configuration
-const API_BASE_URL = window.location.hostname === 'localhost' 
-    ? 'http://localhost:5050' 
-    : 'https://your-backend-domain.onrender.com'; // Replace with your Render domain
+const API_BASE_URL = window.location.hostname === 'localhost'
+    ? 'http://localhost:5050'
+    : 'https://chatapp-backend-flrl.onrender.com';
