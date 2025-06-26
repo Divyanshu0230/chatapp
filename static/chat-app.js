@@ -163,7 +163,7 @@ class ChatApp {
             return;
         }
         try {
-            const res = await fetch('/join_room', {
+            const res = await fetch(`${API_BASE_URL}/join_room`, {
                 method: 'POST',
                 body: JSON.stringify({ room: roomCode })
             });
@@ -189,7 +189,7 @@ class ChatApp {
      */
     async joinUserToRoom(password) {
         try {
-            const res = await fetch('/join', {
+            const res = await fetch(`${API_BASE_URL}/join`, {
                 method: 'POST',
                 body: JSON.stringify({
                     room: this.currentRoom,
@@ -216,7 +216,7 @@ class ChatApp {
 
         // Leave user from room on server
         try {
-            await fetch('/leave', {
+            await fetch(`${API_BASE_URL}/leave`, {
                 method: 'POST',
                 body: JSON.stringify({
                     room: this.currentRoom,
@@ -256,7 +256,7 @@ class ChatApp {
         const text = messageInput.value.trim();
         if (!text) return;
         try {
-            const res = await fetch('/send_message', {
+            const res = await fetch(`${API_BASE_URL}/send_message`, {
                 method: 'POST',
                 body: JSON.stringify({ room: this.currentRoom, text })
             });
@@ -289,7 +289,7 @@ class ChatApp {
         if (!this.currentRoom) return;
 
         try {
-            const response = await fetch(`/get/${this.currentRoom}`);
+            const response = await fetch(`${API_BASE_URL}/get/${this.currentRoom}`);
             const messages = await response.json();
 
             if (messages.length !== this.lastMessageCount) {
@@ -317,7 +317,7 @@ class ChatApp {
         if (!this.currentRoom) return;
 
         try {
-            const response = await fetch(`/users/${this.currentRoom}`);
+            const response = await fetch(`${API_BASE_URL}/users/${this.currentRoom}`);
             const users = await response.json();
             this.displayOnlineUsers(users);
         } catch (error) {
@@ -417,7 +417,7 @@ class ChatApp {
         }
 
         // Send typing status
-        fetch('/typing', {
+        fetch(`${API_BASE_URL}/typing`, {
             method: 'POST',
             body: JSON.stringify({
                 room: this.currentRoom,
@@ -428,7 +428,7 @@ class ChatApp {
 
         // Stop typing after 2 seconds
         this.typingTimeout = setTimeout(() => {
-            fetch('/typing', {
+            fetch(`${API_BASE_URL}/typing`, {
                 method: 'POST',
                 body: JSON.stringify({
                     room: this.currentRoom,
@@ -493,7 +493,7 @@ class ChatApp {
     clearChat() {
         if (!this.currentRoom) return;
 
-        fetch(`/clear/${this.currentRoom}`, {
+        fetch(`${API_BASE_URL}/clear/${this.currentRoom}`, {
             method: 'DELETE'
         }).then(response => {
             if (response.ok) {
@@ -549,7 +549,7 @@ class ChatApp {
     async markMessagesAsRead() {
         if (!this.currentRoom) return;
         try {
-            await fetch('/mark_read', {
+            await fetch(`${API_BASE_URL}/mark_read`, {
                 method: 'POST',
                 body: JSON.stringify({ room: this.currentRoom })
             });
@@ -767,7 +767,7 @@ ChatApp.prototype.displayOnlineUsers = function(users) {
 
 async function adminAction(endpoint, room, user) {
     try {
-        const res = await fetch(`/${endpoint}`, {
+        const res = await fetch(`/${API_BASE_URL}/${endpoint}`, {
             method: 'POST',
             body: JSON.stringify({ room, user })
         });
@@ -790,7 +790,7 @@ ChatApp.prototype.displayMessages = function(messages) {
     container.innerHTML = '';
     // Show pinned messages at the top
     if (this.currentRoom) {
-        fetch(`/get_pins/${this.currentRoom}`, {
+        fetch(`${API_BASE_URL}/get_pins/${this.currentRoom}`, {
             headers: { 'Authorization': localStorage.getItem('jwt') }
         })
         .then(res => res.json())
@@ -1066,7 +1066,7 @@ async function showDM(user) {
     document.getElementById('currentRoomCode').style.display = 'none';
     // Fetch DM messages
     try {
-        const res = await fetch(`/get_dm/${user}`);
+        const res = await fetch(`${API_BASE_URL}/get_dm/${user}`);
         const messages = await res.json();
         renderDMMessages(messages, user);
     } catch (err) {
@@ -1119,7 +1119,7 @@ async function sendDM(user) {
     const text = input.value.trim();
     if (!text) return;
     try {
-        const res = await fetch('/send_dm', {
+        const res = await fetch(`${API_BASE_URL}/send_dm`, {
             method: 'POST',
             body: JSON.stringify({ to: user, text })
         });
@@ -1359,6 +1359,4 @@ function formatFileSize(bytes) {
 }
 
 // API Configuration
-const API_BASE_URL = window.location.hostname === 'localhost'
-    ? 'http://localhost:5050'
-    : 'https://chatapp-backend-flrl.onrender.com';
+const API_BASE_URL = 'https://srv-d1erfbje5dus739586dg.onrender.com';
