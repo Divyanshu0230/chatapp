@@ -157,7 +157,7 @@ class ChatApp {
      * Join a chat room
      */
     async joinRoom() {
-        const roomCode = document.getElementById('roomCode').value.trim();
+        const roomCode = document.getElementById('roomInput').value.trim();
         if (!roomCode) {
             this.showNotification('Please enter a room code', 'error');
             return;
@@ -648,7 +648,7 @@ const displayThemeButtons = () => {
         div.addEventListener("click", () => setTheme(theme));
     });
 };
-displayThemeButtons();
+// Comment out or remove displayThemeButtons and its call if the theme button container does not exist
 
 // Glassmorphism modal logic
 
