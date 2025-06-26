@@ -2,22 +2,22 @@
   "version": 2,
   "builds": [
     {
-      "src": "static/**/*",
+      "src": "templates/index.html",
       "use": "@vercel/static"
     },
     {
-      "src": "templates/index.html",
+      "src": "static/**/*",
       "use": "@vercel/static"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
+      "source": "/static/(.*)",
+      "destination": "/static/$1"
     },
     {
-      "src": "/(.*)",
-      "dest": "/templates/index.html"
+      "source": "/(.*)",
+      "destination": "/templates/index.html"
     }
   ],
   "headers": [
