@@ -35,8 +35,8 @@ app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-change-this')
 # CORS configuration for frontend
 CORS(app, origins=[
     "http://localhost:3000",
-    "https://your-frontend-domain.vercel.app",  # Replace with your Vercel domain
-    "https://*.vercel.app"  # Allow all Vercel subdomains
+    "https://chatflow-pro.vercel.app",
+    "https://*.vercel.app"
 ], supports_credentials=True)
 
 # In-memory storage
