@@ -142,16 +142,6 @@ Modify `static/style.css` to customize the appearance.
 ### Features
 Add new features by modifying the JavaScript files in the `static/` directory.
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
 
 ## 🙏 Acknowledgments
 
