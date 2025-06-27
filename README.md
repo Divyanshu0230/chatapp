@@ -69,25 +69,8 @@ A modern, real-time chat application built with Flask and JavaScript that allows
 
 ## 🖼️ Demo Screenshots
 
-### Main Chat Interface
-![Main Chat Interface](Screenshot%202025-06-27%20at%204.11.28%20AM.png)
-*Clean and modern chat interface with room-based messaging*
+<img width="1710" alt="Screenshot 2025-06-27 at 4 11 28 AM" src="https://github.com/user-attachments/assets/b9285f1c-f350-4ce9-ac7b-c760182280e6" />
 
-### User Joining Rooms
-![User Joining Rooms](Screenshot%202025-06-27%20at%204.11.44%20AM.png)
-*Easy room creation and joining process*
-
-### Real-time Messaging
-![Real-time Messaging](Screenshot%202025-06-27%20at%204.11.55%20AM.png)
-*Instant message delivery with timestamps*
-
-### Mobile Responsiveness
-![Mobile Responsiveness](Screenshot%202025-06-27%20at%204.12.20%20AM.png)
-*Fully responsive design works on all devices*
-
-### Offline Functionality
-![Offline Functionality](Screenshot%202025-06-27%20at%204.12.35%20AM.png)
-*Perfect for local network communication without internet*
 
 ## 🛠️ Technical Details
 
