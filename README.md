@@ -70,7 +70,10 @@ A modern, real-time chat application built with Flask and JavaScript that allows
 ## 🖼️ Demo Screenshots
 
 <img width="1710" alt="Screenshot 2025-06-27 at 4 11 28 AM" src="https://github.com/user-attachments/assets/b9285f1c-f350-4ce9-ac7b-c760182280e6" />
-
+<img width="1710" alt="Screenshot 2025-06-27 at 4 11 44 AM" src="https://github.com/user-attachments/assets/9d3e9943-86f7-47f6-a077-7ce2769fb275" />
+<img width="1710" alt="Screenshot 2025-06-27 at 4 11 55 AM" src="https://github.com/user-attachments/assets/5ef65e09-0dfe-4fbd-a87f-a242ad4a208d" />
+<img width="1710" alt="Screenshot 2025-06-27 at 4 12 20 AM" src="https://github.com/user-attachments/assets/52b19133-dac7-47de-8283-7b48a387b58e" />
+<img width="1710" alt="Screenshot 2025-06-27 at 4 12 35 AM" src="https://github.com/user-attachments/assets/7c3c1b3a-1c6b-46f5-964c-10fe30e72bbb" />
 
 ## 🛠️ Technical Details
 
